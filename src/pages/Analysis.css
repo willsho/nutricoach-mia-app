@@ -1,0 +1,443 @@
+.analysis-page {
+  padding: 20px;
+  max-width: 393px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background-color: #fff;
+}
+
+.page-header {
+  margin-bottom: 24px;
+  padding: 4px 0;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  padding: 8px 16px 8px 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  margin-left: -8px;
+}
+
+.back-button:active {
+  opacity: 0.6;
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 88px;
+}
+
+.user-message {
+  display: flex;
+  justify-content: flex-end;
+  padding-left: 48px;
+}
+
+.message-text {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+  background-color: #f8f9fa;
+  padding: 16px;
+  border-radius: 12px;
+  text-align: left;
+  max-width: 100%;
+}
+
+.system-message {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 48px;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.step-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.step-icon.done {
+  color: #4CAF50;
+}
+
+.step-text {
+  font-size: 14px;
+  color: #666;
+  text-align: left;
+}
+
+.step-item.processing .step-text {
+  color: #1976d2;
+  font-weight: 500;
+}
+
+.step-item.done .step-text {
+  color: #333;
+}
+
+.result-hint {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+  text-align: left;
+}
+
+.meal-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.meal-header,
+.meal-title,
+.food-list,
+.food-item,
+.food-image-placeholder,
+.food-info,
+.food-info h3,
+.food-quantity,
+.food-calories {
+  text-align: left;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.action-button {
+  flex: 1;
+  height: 44px;
+  border-radius: 22px;
+  border: 1px solid #f0f0f0;
+  background: white;
+  color: #666;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.action-button.feedback {
+  border: 1px solid #f0f0f0;
+  background: white;
+  color: #666;
+}
+
+.action-button:active {
+  transform: scale(0.98);
+}
+
+.food-emoji {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.food-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.food-info {
+  flex: 1;
+  margin-left: 12px;
+  text-align: left;
+}
+
+.bottom-buttons,
+.bottom-button,
+.bottom-button.feedback,
+.bottom-button.save {
+  display: none;
+}
+
+.meal-title.clickable {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.meal-title-arrow {
+  color: #999;
+  font-size: 18px;
+}
+
+.meal-type-selector {
+  display: flex;
+  gap: 8px;
+  padding: 16px;
+  justify-content: center;
+  border-top: 1px solid #f0f0f0;
+  margin-top: 8px;
+}
+
+.meal-type-button {
+  padding: 8px 16px;
+  border-radius: 16px;
+  border: 1px solid #f0f0f0;
+  background: white;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.meal-type-button.active {
+  background: #333;
+  color: white;
+  border-color: #333;
+}
+
+.date-picker {
+  padding: 12px 16px !important;
+  width: 100%;
+}
+
+.date-picker input[type="date"] {
+  border: 1px solid #f0f0f0;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 100%;
+  color: #333;
+  font-family: inherit;
+}
+
+.date-picker input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+
+/* 自定义 Menu 样式 */
+.MuiMenu-paper {
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.MuiMenuItem-root {
+  padding: 0 !important;
+}
+
+.floating-save-button {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  height: 48px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 100;
+}
+
+.floating-save-button:active {
+  transform: translateX(-50%) scale(0.98);
+}
+
+.floating-save-button.saving {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.food-selector {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ddd;
+  border-radius: 50%;
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+}
+
+.food-selector.selected {
+  background-color: #333;
+  border-color: #333;
+}
+
+.food-edit-input {
+  border: none;
+  background: transparent;
+  font-size: inherit;
+  color: inherit;
+  width: 100%;
+  padding: 2px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.food-edit-input:focus {
+  outline: none;
+  border-bottom-color: #333;
+}
+
+.food-edit-input.name {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.food-edit-input.quantity {
+  font-size: 12px;
+  color: #999;
+}
+
+.edit-actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0 0;
+  margin-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.edit-action-button {
+  padding: 8px 24px;
+  border-radius: 16px;
+  font-size: 14px;
+  cursor: pointer;
+  border: 1px solid #f0f0f0;
+}
+
+.edit-action-button.add {
+  background: white;
+  color: #333;
+}
+
+.edit-action-button.delete {
+  background: white;
+  color: #ff4d4f;
+  border-color: #ff4d4f;
+}
+
+.edit-action-button.delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.finish-edit-button {
+  background: none;
+  border: none;
+  color: #007AFF;  /* iOS 风格的蓝色 */
+  font-size: 15px;
+  font-weight: 500;
+  padding: 4px 8px;
+  cursor: pointer;
+  margin-left: 16px;
+}
+
+.finish-edit-button:active {
+  opacity: 0.7;
+}
+
+/* 调整食物项在编辑模式下的布局 */
+.food-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+}
+
+.food-info {
+  flex: 1;
+  margin: 0 12px;
+}
+
+.meal-header {
+  margin-bottom: 12px;
+}
+
+.meal-header-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.meal-title-container {
+  flex: 1;
+}
+
+.meal-title.clickable {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.meal-title h2 {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.meal-type {
+  color: #666;
+  font-size: 14px;
+}
+
+.meal-title-arrow {
+  color: #999;
+  font-size: 18px;
+  margin-left: 4px;
+}
+
+.finish-edit-button {
+  background: none;
+  border: none;
+  color: #007AFF;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 4px 8px;
+  cursor: pointer;
+  margin-left: 16px;
+}
+
+.finish-edit-button:active {
+  opacity: 0.7;
+}
+
+.date-menu-paper {
+  border-radius: 12px !important;
+  padding: 16px !important;
+  min-width: 320px !important;
+}
+
+.analysis-container {
+  /* 确保内容不被刘海遮挡 */
+  padding-top: max(16px, env(safe-area-inset-top));
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
+ 
