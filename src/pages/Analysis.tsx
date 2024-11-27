@@ -4,7 +4,7 @@ import { CircularProgress, Menu, MenuItem } from '@mui/material'
 import { analyzeMealInput } from '../utils/mealAnalyzer'
 import { getFoodEmoji } from '../utils/foodEmojis'
 import { saveMeal } from '../utils/mealStorage'
-import { Snackbar, Alert } from '@mui/material'
+import { Snackbar } from '@mui/material'
 import './Analysis.css'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
@@ -434,14 +434,45 @@ export default function Analysis() {
         open={saveStatus === 'success' || saveStatus === 'error'} 
         autoHideDuration={2000}
         onClose={() => setSaveStatus('idle')}
-      >
-        <Alert 
-          severity={saveStatus === 'success' ? 'success' : 'error'}
-          sx={{ width: '100%' }}
-        >
-          {saveStatus === 'success' ? '保存成功' : '保存失败'}
-        </Alert>
-      </Snackbar>
+        anchorOrigin={{ 
+          vertical: 'bottom', 
+          horizontal: 'center' 
+        }}
+        sx={{
+          position: 'fixed',
+          bottom: '120px',
+          '& .MuiSnackbarContent-root': {
+            minWidth: 'unset',
+            maxWidth: '120px',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            padding: '10px 20px',
+            borderRadius: '8px',
+            color: '#fff',
+            fontSize: '14px',
+            boxShadow: 'none',
+            fontWeight: 'normal',
+            justifyContent: 'center'
+          }
+        }}
+        message={
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center',
+            gap: '6px'
+          }}>
+            {saveStatus === 'success' ? (
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.3337 4L6.00033 11.3333L2.66699 8" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 4L4 12M4 4L12 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            )}
+            {saveStatus === 'success' ? '保存成功' : '保存失败'}
+          </div>
+        }
+      />
     </div>
   )
 } 
