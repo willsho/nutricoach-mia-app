@@ -1,19 +1,23 @@
 import { useState } from 'react'
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { Drawer, TextField, Button, IconButton } from '@mui/material'
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
-import { useNavigate } from 'react-router-dom'
 import { todayMeals } from './data/mockMeals'
 import { getFoodEmoji } from './utils/foodEmojis'
 import './App.css'
+import CameraPage from './pages/CameraPage'
+import { Add, PhotoCamera } from '@mui/icons-material';
+import Analysis from './pages/Analysis';
 
 // 设置 dayjs 语言为中文
 dayjs.locale('zh-cn')
 
-function App() {
+// 将主页内容提取为单独的组件
+function HomePage() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [mealInput, setMealInput] = useState('')
@@ -91,12 +95,22 @@ function App() {
         ))}
       </main>
 
-      <button 
-        className="floating-button"
-        onClick={() => setIsDrawerOpen(true)}
-      >
-        + 记录
-      </button>
+      <div className="floating-buttons">
+        <button 
+          className="floating-button record-button"
+          onClick={() => setIsDrawerOpen(true)}
+        >
+          <Add sx={{ width: 20, height: 20 }} /> 记录
+        </button>
+        
+        <button 
+          className="floating-button camera-button"
+          onClick={() => navigate('/camera')}
+          style={{ backgroundColor: '#333' }}
+        >
+          <PhotoCamera sx={{ width: 20, height: 20 }} />
+        </button>
+      </div>
 
       <Drawer
         anchor="bottom"
@@ -179,6 +193,19 @@ function App() {
         </LocalizationProvider>
       </Drawer>
     </div>
+  )
+}
+
+// App 组件只负责路由配置
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/camera" element={<CameraPage />} />
+        <Route path="/analysis" element={<Analysis />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
