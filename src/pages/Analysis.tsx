@@ -50,6 +50,7 @@ export default function Analysis() {
   const [isEditing, setIsEditing] = useState(false)
   const [selectedFoods, setSelectedFoods] = useState<Set<string>>(new Set())
   const [editedFoods, setEditedFoods] = useState<Record<string, { name: string, quantity: string }>>({})
+  const imageData = searchParams.get('input')
 
   useEffect(() => {
     const mealInput = searchParams.get('input')
@@ -82,8 +83,6 @@ export default function Analysis() {
     }
   }, [searchParams])
 
-  const mealInput = searchParams.get('input')
-  
   const handleSave = async () => {
     if (!analysisResult) return
 
@@ -213,6 +212,19 @@ export default function Analysis() {
     }
   }
 
+  // 处理图片显示
+  const getImageSource = (input: string) => {
+    if (input.startsWith('data:image')) {
+      // 这是base64格式的图片数据（iOS）
+      return input;
+    } else if (input.startsWith('blob:')) {
+      // 这是Blob URL（安卓）
+      return input;
+    }
+    // 其他情况（文字输入）
+    return null;
+  };
+
   return (
     <div className="analysis-page">
       <div className="page-header">
@@ -229,7 +241,20 @@ export default function Analysis() {
 
       <div className="chat-container">
         <div className="user-message">
-          <p className="message-text">{decodeURIComponent(mealInput || '')}</p>
+          {imageData && getImageSource(imageData) ? (
+            <img 
+              src={getImageSource(imageData)} 
+              alt="拍摄的照片" 
+              style={{ 
+                maxWidth: '100%', 
+                borderRadius: '8px' 
+              }} 
+            />
+          ) : (
+            <p className="message-text">
+              {decodeURIComponent(imageData || '')}
+            </p>
+          )}
         </div>
 
         {analysisState === 'loading' ? (
