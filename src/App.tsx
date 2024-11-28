@@ -31,6 +31,34 @@ const COMMON_FOODS = [
   "一个苹果"
 ];
 
+// 添加震动工具函数
+const vibrate = () => {
+  if (isIOS) {
+    // iOS 设备使用 haptic feedback
+    try {
+      // 轻触反馈
+      const impactLight = new window.Impactfeedback('light');
+      impactLight.impactOccurred();
+    } catch (error) {
+      try {
+        // 降级方案：使用旧版 API
+        window.webkit?.messageHandlers?.hapticFeedback?.postMessage('selection');
+      } catch (error) {
+        console.log('Haptic feedback not supported');
+      }
+    }
+  } else {
+    // Android 和其他设备使用 vibrate API
+    try {
+      if ('vibrate' in navigator) {
+        navigator.vibrate(10);
+      }
+    } catch (error) {
+      console.log('Vibration not supported');
+    }
+  }
+};
+
 // 将主页内容提取为单独的组件
 function HomePage() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -142,6 +170,16 @@ function HomePage() {
     handleMealMenuClose();
   };
 
+  const handleRecordClick = () => {
+    vibrate();
+    setIsDrawerOpen(true);
+  };
+
+  const handleCameraClick = () => {
+    vibrate();
+    navigate('/camera');
+  };
+
   return (
     <div className="app" style={{ 
       height: '100vh',
@@ -214,14 +252,14 @@ function HomePage() {
       <div className="floating-buttons">
         <button 
           className="floating-button record-button"
-          onClick={() => setIsDrawerOpen(true)}
+          onClick={handleRecordClick}
         >
           <Add sx={{ width: 20, height: 20 }} /> 记录
         </button>
         
         <button 
           className="floating-button camera-button"
-          onClick={() => navigate('/camera')}
+          onClick={handleCameraClick}
           style={{ backgroundColor: '#333' }}
         >
           <PhotoCamera sx={{ width: 20, height: 20 }} />
