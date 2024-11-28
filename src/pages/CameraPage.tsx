@@ -23,8 +23,8 @@ const VideoPreview = styled('video')({
 
 const CloseButton = styled(IconButton)({
   position: 'absolute',
-  top: 20,
-  right: 20,
+  top: 'max(env(safe-area-inset-top), 20px)',
+  right: 'max(env(safe-area-inset-right), 20px)',
   color: 'white',
 });
 
@@ -34,13 +34,13 @@ const GalleryPreview = styled('img')({
   borderRadius: 8,
   objectFit: 'cover',
   position: 'absolute',
-  bottom: 40,
-  left: 20,
+  bottom: 'calc(max(env(safe-area-inset-bottom), 40px) + 10px)',
+  left: 'max(env(safe-area-inset-left), 40px)',
 });
 
 const ControlsContainer = styled(Box)({
   position: 'absolute',
-  bottom: 40,
+  bottom: 'max(env(safe-area-inset-bottom), 40px)',
   left: 0,
   right: 0,
   display: 'flex',
@@ -49,9 +49,11 @@ const ControlsContainer = styled(Box)({
 });
 
 const GalleryButton = styled(IconButton)({
+  width: 60,
+  height: 60,
   position: 'absolute',
-  bottom: 40,
-  left: 20,
+  bottom: 'calc(max(env(safe-area-inset-bottom), 40px) + 10px)',
+  left: 'max(env(safe-area-inset-left), 40px)',
   color: 'white',
   backgroundColor: 'rgba(51, 51, 51, 0.7)',
   '&:hover': {
@@ -100,17 +102,12 @@ export default function CameraPage() {
   const handleSelectPhoto = () => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'image/*'; // 基础图片类型支持
+    input.accept = 'image/*';
     
-    // 为 iOS 设备添加特殊属性
+    // 移除iOS特殊处理，让其默认打开相册
     if (isIOS) {
-      input.accept = 'image/*;capture=camera';
-      // iOS 需要这些属性来支持相册访问
-      input.setAttribute('capture', 'camera');
+      input.accept = 'image/*';
     } else {
-      // Android 设备
-      input.setAttribute('capture', 'environment');
-      // 确保支持常见图片格式
       input.accept = 'image/jpeg,image/png,image/gif,image/webp';
     }
     

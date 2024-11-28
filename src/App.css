@@ -45,7 +45,7 @@
 .app {
   max-width: 600px;
   margin: 0 auto;
-  padding: max(env(safe-area-inset-top), 20px) 16px max(env(safe-area-inset-bottom), 16px) 16px;
+  padding: 0 16px max(env(safe-area-inset-bottom), 16px) 16px;
   background-color: #ffffff;
   height: 100vh;
   width: 100%;
@@ -55,14 +55,14 @@
 
 @media screen and (max-width: 600px) {
   .app {
-    padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom) 16px;
+    padding: 0 16px env(safe-area-inset-bottom) 16px;
   }
 }
 
 .header {
   margin-bottom: 20px;
   text-align: left;
-  padding-top: env(safe-area-inset-top);
+  padding-top: max(env(safe-area-inset-top), 16px);
 }
 
 .header h1 {
