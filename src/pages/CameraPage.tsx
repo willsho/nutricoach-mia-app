@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { styled } from '@mui/material/styles';
 import { IconButton, Box } from '@mui/material';
 import { PhotoCamera, FlipCameraIos, Collections, Close } from '@mui/icons-material';
@@ -98,21 +98,126 @@ export default function CameraPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const navigate = useNavigate();
+  const streamRef = useRef<MediaStream | null>(null);
+
+  const stopCamera = useCallback(() => {
+    if (streamRef.current) {
+      const tracks = streamRef.current.getTracks();
+      tracks.forEach(track => {
+        track.stop();
+        streamRef.current?.removeTrack(track);
+      });
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      const video = videoRef.current;
+      video.srcObject = null;
+      video.load();
+    }
+  }, []);
+
+  const handleClose = useCallback(() => {
+    stopCamera();
+    // 确保相机停止后再导航
+    setTimeout(() => {
+      navigate(-1);
+    }, 100);
+  }, [navigate, stopCamera]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' },
+          audio: false,
+        });
+        
+        // 确保组件仍然挂载
+        if (mounted && videoRef.current) {
+          streamRef.current = stream;
+          videoRef.current.srcObject = stream;
+        } else {
+          // 如果组件已卸载，立即停止相机
+          stream.getTracks().forEach(track => track.stop());
+        }
+      } catch (err) {
+        console.error('相机访问失败:', err);
+      }
+    }
+    
+    startCamera();
+
+    // 清理函数
+    return () => {
+      mounted = false;
+      stopCamera();
+    };
+  }, [stopCamera]);
+
+  // 监听页面可见性变化
+  useEffect(() => {
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        stopCamera();
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [stopCamera]);
+
+  const handleTakePhoto = async () => {
+    if (!videoRef.current) return;
+
+    const canvas = document.createElement('canvas');
+    const video = videoRef.current;
+    
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    
+    const context = canvas.getContext('2d');
+    if (!context) return;
+    
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    try {
+      if (isIOS) {
+        const imageData = canvas.toDataURL('image/jpeg', 0.8);
+        stopCamera();
+        navigate(`/analysis?input=${encodeURIComponent(imageData)}`);
+      } else {
+        const blob = await new Promise<Blob>((resolve, reject) => {
+          canvas.toBlob((blob) => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              reject(new Error('Canvas to Blob failed'));
+            }
+          }, 'image/jpeg', 0.8);
+        });
+
+        const imageUrl = URL.createObjectURL(blob);
+        stopCamera();
+        navigate(`/analysis?input=${encodeURIComponent(imageUrl)}`);
+      }
+    } catch (error) {
+      console.error('拍照失败:', error);
+      alert('拍照失败，请重试');
+    }
+  };
 
   const handleSelectPhoto = () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
     
-    // 移除iOS特殊处理，让其默认打开相册
-    if (isIOS) {
-      input.accept = 'image/*';
-    } else {
-      input.accept = 'image/jpeg,image/png,image/gif,image/webp';
-    }
-    
     // 处理文件选择
-    input.onchange = (e) => {
+    input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
         // 检查文件类型
@@ -129,8 +234,29 @@ export default function CameraPage() {
         }
 
         try {
-          const url = URL.createObjectURL(file);
-          setLastPhoto(url);
+          // 为 iOS 设备特别处理
+          if (isIOS) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              const base64Data = e.target?.result as string;
+              // 停止相机
+              stopCamera();
+              // 导航到分析页面，使用 base64 数据
+              navigate(`/analysis?input=${encodeURIComponent(base64Data)}`);
+            };
+            reader.onerror = function(error) {
+              console.error('读取文件失败:', error);
+              alert('读取图片失败，请重试');
+            };
+            reader.readAsDataURL(file);
+          } else {
+            // 非 iOS 设备使用 Blob URL
+            const url = URL.createObjectURL(file);
+            // 停止相机
+            stopCamera();
+            // 导航到分析页面
+            navigate(`/analysis?input=${encodeURIComponent(url)}`);
+          }
         } catch (error) {
           console.error('处理图片失败:', error);
           alert('处理图片失败，请重试');
@@ -153,83 +279,11 @@ export default function CameraPage() {
     }
   };
 
-  const handleTakePhoto = async () => {
-    if (!videoRef.current) return;
-
-    const canvas = document.createElement('canvas');
-    const video = videoRef.current;
-    
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    
-    const context = canvas.getContext('2d');
-    if (!context) return;
-    
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    
-    try {
-      if (isIOS) {
-        // iOS设备：将照片转换为base64
-        const imageData = canvas.toDataURL('image/jpeg', 0.8);
-        
-        // 停止视频流
-        const stream = videoRef.current.srcObject as MediaStream;
-        stream.getTracks().forEach(track => track.stop());
-        
-        // 跳转到分析页面，传递base64数据
-        navigate(`/analysis?input=${encodeURIComponent(imageData)}`);
-      } else {
-        // 安卓设备：使用Blob URL
-        const blob = await new Promise<Blob>((resolve, reject) => {
-          canvas.toBlob((blob) => {
-            if (blob) {
-              resolve(blob);
-            } else {
-              reject(new Error('Canvas to Blob failed'));
-            }
-          }, 'image/jpeg', 0.8);
-        });
-
-        const imageUrl = URL.createObjectURL(blob);
-        
-        // 停止视频流
-        const stream = videoRef.current.srcObject as MediaStream;
-        stream.getTracks().forEach(track => track.stop());
-        
-        // 跳转到分析页面
-        navigate(`/analysis?input=${encodeURIComponent(imageUrl)}`);
-      }
-      
-    } catch (error) {
-      console.error('拍照失败:', error);
-      alert('拍照失败，请重试');
-    }
-  };
-
-  useEffect(() => {
-    // 请求相机权限并启动预览
-    async function startCamera() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment' },
-          audio: false,
-        });
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-      } catch (err) {
-        console.error('相机访问失败:', err);
-      }
-    }
-    
-    startCamera();
-  }, []);
-
   return (
     <CameraContainer>
-      <VideoPreview ref={videoRef} autoPlay playsInline />
+      <VideoPreview ref={videoRef} autoPlay playsInline muted />
       
-      <CloseButton onClick={() => navigate(-1)}>
+      <CloseButton onClick={handleClose}>
         <Close />
       </CloseButton>
       

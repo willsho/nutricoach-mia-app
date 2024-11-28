@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景圆 -->
+  <circle cx="256" cy="256" r="248" fill="white" stroke="black" stroke-width="16"/>
+  
+  <!-- 脸部轮廓：简单的弧线 -->
+  <path d="M186 230C186 230 186 310 256 310C326 310 326 230 326 230" 
+    stroke="black" 
+    stroke-width="16" 
+    stroke-linecap="round"/>
+  
+  <!-- 眼睛：简单的斜线 -->
+  <path d="M206 240L226 260M226 240L206 260" 
+    stroke="black" 
+    stroke-width="16" 
+    stroke-linecap="round"/>
+  <path d="M286 240L306 260M306 240L286 260" 
+    stroke="black" 
+    stroke-width="16" 
+    stroke-linecap="round"/>
+  
+  <!-- 头发：简单的弧线 -->
+  <path d="M176 200C176 200 176 180 256 180C336 180 336 200 336 200" 
+    stroke="black" 
+    stroke-width="16" 
+    stroke-linecap="round"/>
+  
+  <!-- 营养师标志：简单的叶子 -->
+  <path d="M236 310C236 310 226 330 236 340" 
+    stroke="black" 
+    stroke-width="16" 
+    stroke-linecap="round"/>
+  <path d="M276 310C276 310 286 330 276 340" 
+    stroke="black" 
+    stroke-width="16" 
+    stroke-linecap="round"/>
+</svg> 

@@ -44,6 +44,32 @@ function HomePage() {
   const [isEditMealDrawerOpen, setIsEditMealDrawerOpen] = useState(false);
   const [selectedMeal, setSelectedMeal] = useState<typeof todayMeals[0] | null>(null);
 
+  // 在路由变化时重置Drawer状态
+  useEffect(() => {
+    setIsDrawerOpen(false);
+    setIsCalendarOpen(false);
+    setIsEditMealDrawerOpen(false);
+    setMealMenuAnchorEl(null);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    // 检查是否有更新后的输入
+    if (location.state && 'updatedInput' in location.state) {
+      setMealInput(location.state.updatedInput);
+      // 清除状态，避免重复设置
+      navigate('.', { state: null, replace: true });
+    }
+  }, [location.state, navigate]);
+
+  useEffect(() => {
+    // 如果是从常用食物页面返回，则打开 drawer
+    if (location.state && location.state.openDrawer) {
+      setIsDrawerOpen(true);
+      // 清除状态，避免重复打开
+      navigate('.', { state: null, replace: true });
+    }
+  }, [location.state, navigate]);
+
   const totalCalories = todayMeals.reduce((sum, meal) => sum + meal.totalCalories, 0)
   const today = dayjs()
 
@@ -80,22 +106,6 @@ function HomePage() {
 
   // 只显示前6个食物
   const displayedFoods = COMMON_FOODS.slice(0, 6);
-
-  useEffect(() => {
-    // 检查是否有更新后的输入
-    if (location.state && 'updatedInput' in location.state) {
-      setMealInput(location.state.updatedInput);
-      // 清除状态，避免重复设置
-      navigate('.', { state: null, replace: true });
-    }
-  }, [location.state, navigate]);
-
-  useEffect(() => {
-    // 如果是从常用食物页面返回，则打开 drawer
-    if (location.state && ('updatedInput' in location.state || location.state.openDrawer)) {
-      setIsDrawerOpen(true);
-    }
-  }, [location.state]);
 
   // 修改文本框onChange处理函数
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
