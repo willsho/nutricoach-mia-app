@@ -4,7 +4,7 @@ import { CircularProgress, Menu, MenuItem } from '@mui/material'
 import { analyzeMealInput } from '../utils/mealAnalyzer'
 import { getFoodEmoji } from '../utils/foodEmojis'
 import { saveMeal } from '../utils/mealStorage'
-import { Snackbar, Alert } from '@mui/material'
+import { Snackbar } from '@mui/material'
 import './Analysis.css'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
@@ -50,6 +50,7 @@ export default function Analysis() {
   const [isEditing, setIsEditing] = useState(false)
   const [selectedFoods, setSelectedFoods] = useState<Set<string>>(new Set())
   const [editedFoods, setEditedFoods] = useState<Record<string, { name: string, quantity: string }>>({})
+  const imageData = searchParams.get('input')
 
   useEffect(() => {
     const mealInput = searchParams.get('input')
@@ -82,8 +83,6 @@ export default function Analysis() {
     }
   }, [searchParams])
 
-  const mealInput = searchParams.get('input')
-  
   const handleSave = async () => {
     if (!analysisResult) return
 
@@ -213,6 +212,19 @@ export default function Analysis() {
     }
   }
 
+  // 处理图片显示
+  const getImageSource = (input: string) => {
+    if (input.startsWith('data:image')) {
+      // 这是base64格式的图片数据（iOS）
+      return input;
+    } else if (input.startsWith('blob:')) {
+      // 这是Blob URL（安卓）
+      return input;
+    }
+    // 其他情况（文字输入）
+    return null;
+  };
+
   return (
     <div className="analysis-page">
       <div className="page-header">
@@ -229,7 +241,20 @@ export default function Analysis() {
 
       <div className="chat-container">
         <div className="user-message">
-          <p className="message-text">{decodeURIComponent(mealInput || '')}</p>
+          {imageData && getImageSource(imageData) ? (
+            <img 
+              src={getImageSource(imageData)} 
+              alt="拍摄的照片" 
+              style={{ 
+                maxWidth: '100%', 
+                borderRadius: '8px' 
+              }} 
+            />
+          ) : (
+            <p className="message-text">
+              {decodeURIComponent(imageData || '')}
+            </p>
+          )}
         </div>
 
         {analysisState === 'loading' ? (
@@ -409,14 +434,45 @@ export default function Analysis() {
         open={saveStatus === 'success' || saveStatus === 'error'} 
         autoHideDuration={2000}
         onClose={() => setSaveStatus('idle')}
-      >
-        <Alert 
-          severity={saveStatus === 'success' ? 'success' : 'error'}
-          sx={{ width: '100%' }}
-        >
-          {saveStatus === 'success' ? '保存成功' : '保存失败'}
-        </Alert>
-      </Snackbar>
+        anchorOrigin={{ 
+          vertical: 'bottom', 
+          horizontal: 'center' 
+        }}
+        sx={{
+          position: 'fixed',
+          bottom: '120px',
+          '& .MuiSnackbarContent-root': {
+            minWidth: 'unset',
+            maxWidth: '120px',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            padding: '10px 20px',
+            borderRadius: '8px',
+            color: '#fff',
+            fontSize: '14px',
+            boxShadow: 'none',
+            fontWeight: 'normal',
+            justifyContent: 'center'
+          }
+        }}
+        message={
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center',
+            gap: '6px'
+          }}>
+            {saveStatus === 'success' ? (
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.3337 4L6.00033 11.3333L2.66699 8" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 4L4 12M4 4L12 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            )}
+            {saveStatus === 'success' ? '保存成功' : '保存失败'}
+          </div>
+        }
+      />
     </div>
   )
 } 

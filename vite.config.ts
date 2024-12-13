@@ -47,7 +47,8 @@ export default defineConfig({
             urlPattern: /^https:\/\/api\./i,
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'api-cache'
+              cacheName: 'api-cache',
+              networkTimeoutSeconds: 10
             }
           }
         ]
@@ -56,12 +57,13 @@ export default defineConfig({
   ],
   preview: {
     port: 5173,
-    host: true
+    host: true,
+    open: true
   },
   server: {
     port: 5173,
     host: true,
-    open: 'http://localhost:5173/?viewport=device-width,initial-scale=1,viewport-fit=cover,width=393,height=852'
+    open: true
   },
   optimizeDeps: {
     force: true,
